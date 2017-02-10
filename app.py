@@ -1,7 +1,9 @@
 import os
+from datetime import datetime
 
 from flask import Flask, jsonify
 import boto3
+import pytz
 
 app = Flask(__name__)
 
@@ -11,6 +13,7 @@ app.config['AWS_ACCESS_KEY_ID'] = os.environ.get('AWS_ACCESS_KEY_ID')
 app.config['AWS_SECRET_ACCESS_KEY'] = os.environ.get('AWS_SECRET_ACCESS_KEY')
 app.config['AWS_SNS_TOPIC'] = os.environ.get('AWS_SNS_TOPIC')
 app.config['AWS_SNS_REGION'] = os.environ.get('AWS_SNS_REGION')
+app.config['APP_TZ'] = os.environ.get('APP_TZ')
 
 sns = boto3.resource(
     'sns',
@@ -20,12 +23,23 @@ sns = boto3.resource(
 )
 topic = sns.Topic(app.config['AWS_SNS_TOPIC'])
 
+def get_datetime(timezone):
+    """Returns datetime object as given timezone."""
+    tz = pytz.timezone(timezone)
+    return pytz.utc.localize(datetime.utcnow()).astimezone(tz)
+
 @app.route('/')
 def index():
-    response = topic.publish(
-        Message = 'Ding Dong',
-    )
-    return jsonify(response), {'Access-Control-Allow-Origin': '*'}
+    now = get_datetime(app.config['APP_TZ'])
+    if now.weekday() == 3 and now.hour >= 18 and now.hour <= 21:
+        response = topic.publish(
+            Message = 'Ding Dong',
+        )
+        return jsonify(response), {'Access-Control-Allow-Origin': '*'}
+    else:
+        return jsonify({
+            'message': 'Doorbell is inactive at this time.'
+        }), {'Access-Control-Allow-Origin': '*'}
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0')
