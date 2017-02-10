@@ -25,7 +25,7 @@ def index():
     response = topic.publish(
         Message = 'Ding Dong',
     )
-    return jsonify(response)
+    return jsonify(response), {'Access-Control-Allow-Origin': '*'}
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0')
