@@ -35,7 +35,14 @@ def index():
         response = topic.publish(
             Message = 'Ding Dong',
         )
-        return jsonify(response), {'Access-Control-Allow-Origin': '*'}
+        if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+            return jsonify({
+                'message': 'Someone will open the door shortly.'
+            }), {'Access-Control-Allow-Origin': '*'}
+        else:
+            return jsonify({
+                'message': 'Something went wrong. Please try again.'
+            }), {'Access-Control-Allow-Origin': '*'}
     else:
         return jsonify({
             'message': 'Doorbell is inactive at this time.'
