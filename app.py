@@ -28,6 +28,10 @@ def get_datetime(timezone):
     tz = pytz.timezone(timezone)
     return pytz.utc.localize(datetime.utcnow()).astimezone(tz)
 
+def doorbell_is_active():
+    now = get_datetime(app.config['APP_TZ'])
+    return now.weekday() == 3 and now.hour >= 18 and now.hour < 21
+
 @app.after_request
 def set_cors_headers(response):
     response.headers['Access-Control-Allow-Origin'] = '*'
@@ -37,8 +41,13 @@ def set_cors_headers(response):
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST' and request.is_json:
-        now = get_datetime(app.config['APP_TZ'])
-        if now.weekday() == 3 and now.hour >= 18 and now.hour < 21:
+        if request.get_json().get('action') == 'status':
+            status = 'active' if doorbell_is_active() else 'inactive'
+            return jsonify({
+                'status': status
+            })
+        elif doorbell_is_active() and request.get_json().get('action') == 'ring':
+            now = get_datetime(app.config['APP_TZ'])
             message = '{hour}:{minute} Ding Dong'.format(
                 hour = now.hour,
                 minute = now.minute,
