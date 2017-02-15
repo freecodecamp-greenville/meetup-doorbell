@@ -39,8 +39,12 @@ def index():
     if request.method == 'POST' and request.is_json:
         now = get_datetime(app.config['APP_TZ'])
         if now.weekday() == 3 and now.hour >= 18 and now.hour < 21:
+            message = '{hour}:{minute} Ding Dong'.format(
+                hour = now.hour,
+                minute = now.minute,
+            )
             response = topic.publish(
-                Message = 'Ding Dong',
+                Message = message,
             )
             if response['ResponseMetadata']['HTTPStatusCode'] == 200:
                 return jsonify({
