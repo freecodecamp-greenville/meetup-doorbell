@@ -38,7 +38,7 @@ def set_cors_headers(response):
 def index():
     if request.method == 'POST' and request.is_json:
         now = get_datetime(app.config['APP_TZ'])
-        if now.weekday() == 3 and now.hour >= 18 and now.hour <= 21:
+        if now.weekday() == 3 and now.hour >= 18 and now.hour < 21:
             response = topic.publish(
                 Message = 'Ding Dong',
             )
