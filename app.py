@@ -1,7 +1,7 @@
 import os
 from datetime import datetime
 
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 import boto3
 import pytz
 
@@ -28,25 +28,36 @@ def get_datetime(timezone):
     tz = pytz.timezone(timezone)
     return pytz.utc.localize(datetime.utcnow()).astimezone(tz)
 
-@app.route('/')
+@app.after_request
+def set_cors_headers(response):
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Access-Control-Allow-Headers'] = 'content-type'
+    return response
+
+@app.route('/', methods=['GET', 'POST'])
 def index():
-    now = get_datetime(app.config['APP_TZ'])
-    if now.weekday() == 3 and now.hour >= 18 and now.hour <= 21:
-        response = topic.publish(
-            Message = 'Ding Dong',
-        )
-        if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-            return jsonify({
-                'message': 'Someone will open the door shortly.'
-            }), {'Access-Control-Allow-Origin': '*'}
+    if request.method == 'POST' and request.is_json:
+        now = get_datetime(app.config['APP_TZ'])
+        if now.weekday() == 3 and now.hour >= 18 and now.hour <= 21:
+            response = topic.publish(
+                Message = 'Ding Dong',
+            )
+            if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+                return jsonify({
+                    'message': 'Someone will open the door shortly.'
+                })
+            else:
+                return jsonify({
+                    'message': 'Something went wrong. Please try again.'
+                })
         else:
             return jsonify({
-                'message': 'Something went wrong. Please try again.'
-            }), {'Access-Control-Allow-Origin': '*'}
+                'message': 'Doorbell is inactive at this time.'
+            })
     else:
         return jsonify({
-            'message': 'Doorbell is inactive at this time.'
-        }), {'Access-Control-Allow-Origin': '*'}
+            'message': 'Incorrect request type.',
+        })
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0')
