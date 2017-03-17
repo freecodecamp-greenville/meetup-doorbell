@@ -48,7 +48,7 @@ def index():
             })
         elif doorbell_is_active() and request.get_json().get('action') == 'ring':
             now = get_datetime(app.config['APP_TZ'])
-            message = '{hour}:{minute} Ding Dong'.format(
+            message = '{hour:02d}:{minute:02d} Ding Dong'.format(
                 hour = now.hour,
                 minute = now.minute,
             )
