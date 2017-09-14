@@ -9,8 +9,8 @@ app = Flask(__name__)
 
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
 app.config['DEBUG'] = os.environ.get('FLASK_DEBUG', 'false').lower() == 'true'
-app.config['AWS_ACCESS_KEY_ID'] = os.environ.get('AWS_ACCESS_KEY_ID')
-app.config['AWS_SECRET_ACCESS_KEY'] = os.environ.get('AWS_SECRET_ACCESS_KEY')
+app.config['AWS_ACCESS_KEY_ID'] = os.environ.get('APP_AWS_ACCESS_KEY_ID')
+app.config['AWS_SECRET_ACCESS_KEY'] = os.environ.get('APP_AWS_SECRET_ACCESS_KEY')
 app.config['AWS_SNS_TOPIC'] = os.environ.get('AWS_SNS_TOPIC')
 app.config['AWS_SNS_REGION'] = os.environ.get('AWS_SNS_REGION')
 app.config['APP_TZ'] = os.environ.get('APP_TZ')
