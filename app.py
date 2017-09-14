@@ -29,6 +29,8 @@ def get_datetime(timezone):
     return pytz.utc.localize(datetime.utcnow()).astimezone(tz)
 
 def doorbell_is_active():
+    if os.environ.get('FORCE_ACTIVE', 'false').lower() == 'true':
+        return True
     now = get_datetime(app.config['APP_TZ'])
     if os.environ.get('SUPPRESS_DATES'):
         suppress_dates = [
