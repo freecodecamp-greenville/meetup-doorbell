@@ -10,6 +10,7 @@ pylint = "*"
 boto3 = "*"
 pytz = "*"
 Flask = "*"
+zappa = "*"
 
 [requires]
 python_version = "3.6"
