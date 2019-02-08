@@ -37,9 +37,7 @@ def index():
             status = "active" if active else "inactive"
             return jsonify({"status": status})
         elif active and request.get_json().get("action") == "ring":
-            message = "{hour:02d}:{minute:02d} Ding Dong".format(
-                hour=now.hour, minute=now.minute
-            )
+            message = f"{now.strftime('%H:%M:%S')} Ding Dong"
             response = topic.publish(Message=message)
             if response["ResponseMetadata"]["HTTPStatusCode"] == 200:
                 return jsonify({"message": "Someone will open the door shortly."})
@@ -49,6 +47,7 @@ def index():
             return jsonify({"message": "Doorbell is inactive at this time."})
     else:
         return jsonify({"message": "Incorrect request type."})
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0")
