@@ -20,8 +20,5 @@ def doorbell_is_active(now: datetime, suppress_dates="", force_active=False):
         if now.date() in suppress_dates:
             return False
     return (
-        now.weekday() == 3
-        and now.hour >= 18
-        and now.hour < 21
-        and (1 <= now.day <= 7 or 15 <= now.day <= 21)
+        now.weekday() == 3 and now.hour >= 18 and now.hour < 21 and (1 <= now.day <= 7)
     )

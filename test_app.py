@@ -14,8 +14,8 @@ def test_doorbell_is_active():
     assert not doorbell_is_active(datetime(2018, 3, 1, 21, 0, 0))
     # inactive on second thursday
     assert not doorbell_is_active(datetime(2018, 3, 8, 19, 0, 0))
-    # active on third thursday
-    assert doorbell_is_active(datetime(2018, 3, 15, 19, 0, 0))
+    # inactive on third thursday
+    assert not doorbell_is_active(datetime(2018, 3, 15, 19, 0, 0))
     # inactive on fourth thursday
     assert not doorbell_is_active(datetime(2018, 3, 22, 19, 0, 0))
     # inactive on fifth thursday
